@@ -1,13 +1,19 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\BrandController;
 use App\Http\Controllers\Api\CatalogController;
+use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\CustomerController;
 use App\Http\Controllers\Api\CustomerGroupController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\ProductController;
+use App\Http\Controllers\Api\PurchaseController;
 use App\Http\Controllers\Api\SaleController;
+use App\Http\Controllers\Api\StockAdjustmentController;
 use App\Http\Controllers\Api\SupplierController;
+use App\Http\Controllers\Api\TaxController;
+use App\Http\Controllers\Api\UnitController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -86,5 +92,34 @@ Route::prefix('v1')->group(function () {
             Route::put('/suppliers/{supplier}', [SupplierController::class, 'update']);
             Route::delete('/suppliers/{supplier}', [SupplierController::class, 'destroy']);
         });
+
+        // --- Purchases ---
+        Route::get('/purchases', [PurchaseController::class, 'index']);
+        Route::get('/purchases/{purchase}', [PurchaseController::class, 'show']);
+        Route::post('/purchases', [PurchaseController::class, 'store'])->middleware('permission:create-purchase');
+
+        // --- Stock adjustments ---
+        Route::get('/stock-adjustments', [StockAdjustmentController::class, 'index']);
+        Route::post('/stock-adjustments', [StockAdjustmentController::class, 'store'])->middleware('permission:adjust-stock');
+
+        // --- Catalog management (categories / brands / units / taxes) ---
+        Route::middleware('permission:manage-products')->group(function () {
+            Route::post('/categories', [CategoryController::class, 'store']);
+            Route::put('/categories/{category}', [CategoryController::class, 'update']);
+            Route::delete('/categories/{category}', [CategoryController::class, 'destroy']);
+            Route::post('/brands', [BrandController::class, 'store']);
+            Route::put('/brands/{brand}', [BrandController::class, 'update']);
+            Route::delete('/brands/{brand}', [BrandController::class, 'destroy']);
+            Route::post('/units', [UnitController::class, 'store']);
+            Route::put('/units/{unit}', [UnitController::class, 'update']);
+            Route::delete('/units/{unit}', [UnitController::class, 'destroy']);
+            Route::post('/taxes', [TaxController::class, 'store']);
+            Route::put('/taxes/{tax}', [TaxController::class, 'update']);
+            Route::delete('/taxes/{tax}', [TaxController::class, 'destroy']);
+        });
+        Route::get('/categories', [CategoryController::class, 'index']);
+        Route::get('/brands', [BrandController::class, 'index']);
+        Route::get('/units', [UnitController::class, 'index']);
+        Route::get('/taxes', [TaxController::class, 'index']);
     });
 });

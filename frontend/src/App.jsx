@@ -8,6 +8,8 @@ import Products from '@/pages/Products'
 import Customers from '@/pages/Customers'
 import Suppliers from '@/pages/Suppliers'
 import Sales from '@/pages/Sales'
+import Purchases from '@/pages/Purchases'
+import Inventory from '@/pages/Inventory'
 import Placeholder from '@/pages/Placeholder'
 
 export default function App() {
@@ -24,8 +26,8 @@ export default function App() {
           <Route index element={<Dashboard />} />
           <Route path="sales" element={<Sales />} />
           <Route path="products" element={<Products />} />
-          <Route path="inventory" element={<Placeholder title="Inventory" />} />
-          <Route path="purchases" element={<Placeholder title="Purchases" />} />
+          <Route path="inventory" element={<Inventory />} />
+          <Route path="purchases" element={<Purchases />} />
           <Route path="customers" element={<Customers />} />
           <Route path="suppliers" element={<Suppliers />} />
           <Route path="expenses" element={<Placeholder title="Expenses" />} />
