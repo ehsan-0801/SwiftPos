@@ -1,0 +1,84 @@
+@import './styles/tokens.css';
+@import 'tailwindcss';
+
+/* Fonts (spec §6.3) */
+@import '@fontsource/inter/400.css';
+@import '@fontsource/inter/500.css';
+@import '@fontsource/inter/600.css';
+@import '@fontsource/inter/700.css';
+@import '@fontsource/jetbrains-mono/400.css';
+@import '@fontsource/courier-prime/400.css';
+
+/*
+ * Register design tokens as Tailwind theme aliases so utilities like
+ * bg-primary, text-sidebar, rounded-md, shadow-md resolve to our tokens.
+ */
+@theme {
+  --color-bg-base: #f7f8fa;
+  --color-bg-sidebar: #12151e;
+  --color-bg-card: #ffffff;
+  --color-bg-muted: #eef0f5;
+
+  --color-primary: #2d6be4;
+  --color-primary-hover: #1e54c0;
+  --color-primary-light: #ebf1fd;
+
+  --color-success: #17a865;
+  --color-warning: #f5a623;
+  --color-danger: #e5384f;
+  --color-info: #0ea5e9;
+
+  --color-text-primary: #111827;
+  --color-text-secondary: #6b7280;
+  --color-text-inverse: #ffffff;
+  --color-text-sidebar: #a8b3c8;
+
+  --color-border: #e2e6ec;
+
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --font-receipt: 'Courier Prime', monospace;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  color: var(--color-text-primary);
+  background: var(--color-bg-base);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Transaction ticker slide-in (spec §6.1) */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Print only the receipt (spec §10 / NFR Print) */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #receipt,
+  #receipt * {
+    visibility: visible;
+  }
+  #receipt {
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+}
