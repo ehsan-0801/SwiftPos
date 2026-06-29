@@ -11,5 +11,9 @@ dist/
 # Local env (committed as .env.example instead)
 frontend/.env
 
+# Markdown is a local-only working format — not tracked going forward.
+# (README.md and POS_Requirements_Specification.md were committed earlier and stay.)
+*.md
+
 # Scratch
 /scratchpad/
