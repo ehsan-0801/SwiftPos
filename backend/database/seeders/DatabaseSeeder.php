@@ -103,5 +103,21 @@ class DatabaseSeeder extends Seeder
         foreach ($settings as $key => $value) {
             Setting::firstOrCreate(['key' => $key], ['value' => $value]);
         }
+
+        // --- Sample sales (so Sales History / Dashboard / Reports have data) ---
+        if (\App\Models\Sale::count() === 0) {
+            $saleService = app(\App\Services\SaleService::class);
+            $byId = Product::pluck('id', 'sku');
+
+            $sampleSales = [
+                ['items' => [['product_id' => $byId['PRD-001'], 'qty' => 2, 'price' => 20], ['product_id' => $byId['PRD-003'], 'qty' => 1, 'price' => 45]], 'paid' => 200],
+                ['items' => [['product_id' => $byId['PRD-002'], 'qty' => 1, 'price' => 30], ['product_id' => $byId['PRD-005'], 'qty' => 10, 'price' => 2]], 'paid' => 100],
+                ['items' => [['product_id' => $byId['PRD-004'], 'qty' => 3, 'price' => 75]], 'paid' => 225],
+            ];
+
+            foreach ($sampleSales as $sale) {
+                $saleService->create([...$sale, 'payment_method' => 'cash'], $admin->id);
+            }
+        }
     }
 }
