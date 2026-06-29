@@ -13,10 +13,12 @@ use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\PurchaseController;
 use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\SaleController;
+use App\Http\Controllers\Api\SettingController;
 use App\Http\Controllers\Api\StockAdjustmentController;
 use App\Http\Controllers\Api\SupplierController;
 use App\Http\Controllers\Api\TaxController;
 use App\Http\Controllers\Api\UnitController;
+use App\Http\Controllers\Api\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -141,5 +143,21 @@ Route::prefix('v1')->group(function () {
         // --- Reports (JSON, or ?export=pdf|excel) ---
         Route::get('/reports/{report}', [ReportController::class, 'show'])
             ->middleware('permission:view-reports');
+
+        // --- Settings ---
+        Route::get('/settings', [SettingController::class, 'index']);
+        Route::middleware('permission:system-settings')->group(function () {
+            Route::post('/settings', [SettingController::class, 'update']);
+            Route::post('/settings/logo', [SettingController::class, 'logo']);
+        });
+
+        // --- User management ---
+        Route::middleware('permission:manage-users')->group(function () {
+            Route::get('/users/roles', [UserController::class, 'roles']);
+            Route::get('/users', [UserController::class, 'index']);
+            Route::post('/users', [UserController::class, 'store']);
+            Route::put('/users/{user}', [UserController::class, 'update']);
+            Route::delete('/users/{user}', [UserController::class, 'destroy']);
+        });
     });
 });

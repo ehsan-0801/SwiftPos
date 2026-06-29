@@ -12,7 +12,8 @@ import Purchases from '@/pages/Purchases'
 import Inventory from '@/pages/Inventory'
 import Expenses from '@/pages/Expenses'
 import Reports from '@/pages/Reports'
-import Placeholder from '@/pages/Placeholder'
+import Settings from '@/pages/Settings'
+import Users from '@/pages/Users'
 
 export default function App() {
   return (
@@ -34,7 +35,8 @@ export default function App() {
           <Route path="suppliers" element={<Suppliers />} />
           <Route path="expenses" element={<Expenses />} />
           <Route path="reports" element={<Reports />} />
-          <Route path="settings" element={<Placeholder title="Settings" />} />
+          <Route path="users" element={<Users />} />
+          <Route path="settings" element={<Settings />} />
         </Route>
       </Route>
     </Routes>

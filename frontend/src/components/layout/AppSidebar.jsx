@@ -7,6 +7,8 @@ import { useAuth } from '@/hooks/useAuth'
 export default function AppSidebar() {
   const user = useAuthStore((s) => s.user)
   const { logout } = useAuth()
+  const perms = user?.permissions ?? []
+  const visibleItems = navItems.filter((i) => !i.permission || perms.includes(i.permission))
 
   return (
     <aside className="flex h-full w-60 flex-col bg-bg-sidebar text-text-sidebar">
@@ -18,7 +20,7 @@ export default function AppSidebar() {
       </div>
 
       <nav className="flex-1 space-y-1 px-3 py-2">
-        {navItems.map((item) => (
+        {visibleItems.map((item) => (
           <NavLink
             key={item.to}
             to={item.to}

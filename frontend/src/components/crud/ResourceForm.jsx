@@ -22,7 +22,7 @@ export default function ResourceForm({ open, onClose, record, fields, title, sub
     setErrors({})
     const init = {}
     for (const f of fields) {
-      const val = record?.[f.name]
+      const val = f.from ? f.from(record) : record?.[f.name]
       init[f.name] =
         val ?? (f.type === 'checkbox' ? (f.default ?? false) : f.default ?? '')
     }
