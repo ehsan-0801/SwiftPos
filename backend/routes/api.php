@@ -7,6 +7,8 @@ use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\CustomerController;
 use App\Http\Controllers\Api\CustomerGroupController;
 use App\Http\Controllers\Api\DashboardController;
+use App\Http\Controllers\Api\ExpenseCategoryController;
+use App\Http\Controllers\Api\ExpenseController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\PurchaseController;
 use App\Http\Controllers\Api\SaleController;
@@ -121,5 +123,18 @@ Route::prefix('v1')->group(function () {
         Route::get('/brands', [BrandController::class, 'index']);
         Route::get('/units', [UnitController::class, 'index']);
         Route::get('/taxes', [TaxController::class, 'index']);
+
+        // --- Expenses ---
+        Route::middleware('permission:manage-expenses')->group(function () {
+            Route::get('/expense-categories', [ExpenseCategoryController::class, 'index']);
+            Route::post('/expense-categories', [ExpenseCategoryController::class, 'store']);
+            Route::put('/expense-categories/{expenseCategory}', [ExpenseCategoryController::class, 'update']);
+            Route::delete('/expense-categories/{expenseCategory}', [ExpenseCategoryController::class, 'destroy']);
+
+            Route::get('/expenses', [ExpenseController::class, 'index']);
+            Route::post('/expenses', [ExpenseController::class, 'store']);
+            Route::put('/expenses/{expense}', [ExpenseController::class, 'update']);
+            Route::delete('/expenses/{expense}', [ExpenseController::class, 'destroy']);
+        });
     });
 });

@@ -68,6 +68,10 @@ class DatabaseSeeder extends Seeder
             'name' => 'Beverage Wholesale Ltd', 'email' => 'order@bevwholesale.com', 'balance' => 1200,
         ]);
 
+        foreach (['Rent', 'Utilities', 'Salaries', 'Transport', 'Miscellaneous'] as $ec) {
+            \App\Models\ExpenseCategory::firstOrCreate(['name' => $ec]);
+        }
+
         // --- Sample products ---
         $products = [
             ['name' => 'Mineral Water 500ml', 'sku' => 'PRD-001', 'barcode' => '8900000000017', 'category_id' => $beverages->id, 'brand_id' => $generic->id, 'unit_id' => $pcs->id, 'price' => 20, 'cost' => 12, 'tax_id' => $vat5->id, 'stock' => 200, 'alert_qty' => 20],
