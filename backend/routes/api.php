@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CatalogController;
 use App\Http\Controllers\Api\CustomerController;
 use App\Http\Controllers\Api\CustomerGroupController;
+use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\SaleController;
 use App\Http\Controllers\Api\SupplierController;
@@ -34,6 +35,9 @@ Route::prefix('v1')->group(function () {
 
         // Lookup data for product forms.
         Route::get('/catalog/meta', [CatalogController::class, 'meta']);
+
+        // Dashboard metrics.
+        Route::get('/dashboard/summary', [DashboardController::class, 'summary']);
 
         // --- Products ---
         Route::get('/products/search', [ProductController::class, 'search']);
