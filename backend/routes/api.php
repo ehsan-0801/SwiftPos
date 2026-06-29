@@ -2,8 +2,11 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CatalogController;
+use App\Http\Controllers\Api\CustomerController;
+use App\Http\Controllers\Api\CustomerGroupController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\SaleController;
+use App\Http\Controllers\Api\SupplierController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -52,5 +55,32 @@ Route::prefix('v1')->group(function () {
         Route::get('/sales/{sale}', [SaleController::class, 'show']);
         Route::post('/sales', [SaleController::class, 'store'])->middleware('permission:make-sales');
         Route::post('/sales/{sale}/return', [SaleController::class, 'refund'])->middleware('permission:return-sales');
+
+        // --- Customers ---
+        Route::get('/customers/search', [CustomerController::class, 'search']);
+        Route::get('/customers', [CustomerController::class, 'index']);
+        Route::get('/customers/{customer}', [CustomerController::class, 'show']);
+        Route::get('/customers/{customer}/history', [CustomerController::class, 'history']);
+
+        Route::middleware('permission:manage-customers')->group(function () {
+            Route::post('/customers', [CustomerController::class, 'store']);
+            Route::put('/customers/{customer}', [CustomerController::class, 'update']);
+            Route::delete('/customers/{customer}', [CustomerController::class, 'destroy']);
+
+            Route::get('/customer-groups', [CustomerGroupController::class, 'index']);
+            Route::post('/customer-groups', [CustomerGroupController::class, 'store']);
+            Route::put('/customer-groups/{customerGroup}', [CustomerGroupController::class, 'update']);
+            Route::delete('/customer-groups/{customerGroup}', [CustomerGroupController::class, 'destroy']);
+        });
+
+        // --- Suppliers ---
+        Route::get('/suppliers', [SupplierController::class, 'index']);
+        Route::get('/suppliers/{supplier}', [SupplierController::class, 'show']);
+
+        Route::middleware('permission:manage-suppliers')->group(function () {
+            Route::post('/suppliers', [SupplierController::class, 'store']);
+            Route::put('/suppliers/{supplier}', [SupplierController::class, 'update']);
+            Route::delete('/suppliers/{supplier}', [SupplierController::class, 'destroy']);
+        });
     });
 });

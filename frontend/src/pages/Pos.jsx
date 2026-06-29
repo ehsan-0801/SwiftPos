@@ -9,6 +9,7 @@ import { formatCurrency } from '@/utils/format'
 import Button from '@/components/ui/Button'
 import PaymentModal from '@/components/pos/PaymentModal'
 import ReceiptPreview from '@/components/pos/ReceiptPreview'
+import CustomerPicker from '@/components/pos/CustomerPicker'
 
 export default function Pos() {
   const navigate = useNavigate()
@@ -19,11 +20,13 @@ export default function Pos() {
     items, addItem, updateQty, removeItem, clear,
     subtotal, taxTotal, total, discount,
     held, hold, recall, dropHeld,
+    customer, setCustomer,
   } = useCartStore()
 
   const [query, setQuery] = useState('')
   const [debounced, setDebounced] = useState('')
   const [payOpen, setPayOpen] = useState(false)
+  const [custOpen, setCustOpen] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [receipt, setReceipt] = useState(null)
   const [recent, setRecent] = useState([])
@@ -107,7 +110,7 @@ export default function Pos() {
           break
         case 'F8':
           e.preventDefault()
-          toast('Customer panel — available once the Customers module ships')
+          setCustOpen(true)
           break
         default:
           break
@@ -196,10 +199,15 @@ export default function Pos() {
             </div>
           )}
 
-          <div className="flex items-center justify-between border-b border-border px-4 py-3 text-sm">
-            <span className="text-text-secondary">Customer</span>
-            <span className="font-medium">Walk-in (F8)</span>
-          </div>
+          <button
+            onClick={() => setCustOpen(true)}
+            className="flex w-full items-center justify-between border-b border-border px-4 py-3 text-left text-sm hover:bg-bg-base"
+          >
+            <span className="text-text-secondary">Customer (F8)</span>
+            <span className="font-medium">
+              {customer ? `${customer.name}${customer.phone ? ` · ${customer.phone}` : ''}` : 'Walk-in ▾'}
+            </span>
+          </button>
 
           <div className="flex-1 overflow-auto">
             {items.length === 0 ? (
@@ -292,6 +300,11 @@ export default function Pos() {
         open={Boolean(receipt)}
         onClose={() => setReceipt(null)}
         data={receipt}
+      />
+      <CustomerPicker
+        open={custOpen}
+        onClose={() => setCustOpen(false)}
+        onSelect={setCustomer}
       />
     </div>
   )

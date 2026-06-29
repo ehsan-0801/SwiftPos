@@ -50,8 +50,23 @@ class DatabaseSeeder extends Seeder
         $generic = Brand::firstOrCreate(['name' => 'Generic']);
         $coke = Brand::firstOrCreate(['name' => 'Coca-Cola']);
 
-        CustomerGroup::firstOrCreate(['name' => 'Walk-in'], ['discount_percent' => 0]);
-        CustomerGroup::firstOrCreate(['name' => 'Wholesale'], ['discount_percent' => 5]);
+        $walkIn = CustomerGroup::firstOrCreate(['name' => 'Walk-in'], ['discount_percent' => 0]);
+        $wholesale = CustomerGroup::firstOrCreate(['name' => 'Wholesale'], ['discount_percent' => 5]);
+
+        // --- Sample customers & suppliers ---
+        \App\Models\Customer::firstOrCreate(['phone' => '01711000001'], [
+            'name' => 'Rahim Uddin', 'email' => 'rahim@example.com', 'group_id' => $walkIn->id, 'balance' => 0,
+        ]);
+        \App\Models\Customer::firstOrCreate(['phone' => '01711000002'], [
+            'name' => 'Karim Traders', 'email' => 'karim@example.com', 'group_id' => $wholesale->id, 'balance' => 250,
+        ]);
+
+        \App\Models\Supplier::firstOrCreate(['phone' => '01811000001'], [
+            'name' => 'Dhaka Distributors', 'email' => 'sales@dhakadist.com', 'balance' => 0,
+        ]);
+        \App\Models\Supplier::firstOrCreate(['phone' => '01811000002'], [
+            'name' => 'Beverage Wholesale Ltd', 'email' => 'order@bevwholesale.com', 'balance' => 1200,
+        ]);
 
         // --- Sample products ---
         $products = [

@@ -5,6 +5,8 @@ import Login from '@/pages/Login'
 import Dashboard from '@/pages/Dashboard'
 import Pos from '@/pages/Pos'
 import Products from '@/pages/Products'
+import Customers from '@/pages/Customers'
+import Suppliers from '@/pages/Suppliers'
 import Placeholder from '@/pages/Placeholder'
 
 export default function App() {
@@ -23,8 +25,8 @@ export default function App() {
           <Route path="products" element={<Products />} />
           <Route path="inventory" element={<Placeholder title="Inventory" />} />
           <Route path="purchases" element={<Placeholder title="Purchases" />} />
-          <Route path="customers" element={<Placeholder title="Customers" />} />
-          <Route path="suppliers" element={<Placeholder title="Suppliers" />} />
+          <Route path="customers" element={<Customers />} />
+          <Route path="suppliers" element={<Suppliers />} />
           <Route path="expenses" element={<Placeholder title="Expenses" />} />
           <Route path="reports" element={<Placeholder title="Reports" />} />
           <Route path="settings" element={<Placeholder title="Settings" />} />
