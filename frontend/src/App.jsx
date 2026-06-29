@@ -11,6 +11,7 @@ import Sales from '@/pages/Sales'
 import Purchases from '@/pages/Purchases'
 import Inventory from '@/pages/Inventory'
 import Expenses from '@/pages/Expenses'
+import Reports from '@/pages/Reports'
 import Placeholder from '@/pages/Placeholder'
 
 export default function App() {
@@ -32,7 +33,7 @@ export default function App() {
           <Route path="customers" element={<Customers />} />
           <Route path="suppliers" element={<Suppliers />} />
           <Route path="expenses" element={<Expenses />} />
-          <Route path="reports" element={<Placeholder title="Reports" />} />
+          <Route path="reports" element={<Reports />} />
           <Route path="settings" element={<Placeholder title="Settings" />} />
         </Route>
       </Route>

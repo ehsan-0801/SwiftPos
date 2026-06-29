@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\ExpenseCategoryController;
 use App\Http\Controllers\Api\ExpenseController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\PurchaseController;
+use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\SaleController;
 use App\Http\Controllers\Api\StockAdjustmentController;
 use App\Http\Controllers\Api\SupplierController;
@@ -136,5 +137,9 @@ Route::prefix('v1')->group(function () {
             Route::put('/expenses/{expense}', [ExpenseController::class, 'update']);
             Route::delete('/expenses/{expense}', [ExpenseController::class, 'destroy']);
         });
+
+        // --- Reports (JSON, or ?export=pdf|excel) ---
+        Route::get('/reports/{report}', [ReportController::class, 'show'])
+            ->middleware('permission:view-reports');
     });
 });
