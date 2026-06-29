@@ -1,0 +1,15 @@
+# OS / editor
+.DS_Store
+*.log
+
+# Node (frontend deps are inside frontend/.gitignore too)
+node_modules/
+
+# Build output
+dist/
+
+# Local env (committed as .env.example instead)
+frontend/.env
+
+# Scratch
+/scratchpad/
