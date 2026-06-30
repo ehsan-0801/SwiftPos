@@ -46,7 +46,18 @@ export default function Products() {
     }
   }
 
+  // Serial number — a positional row count (not the database id),
+  // continuous across pages via the pagination offset.
+  const serialBase = meta?.from ?? 1
+
   const columns = [
+    {
+      key: 'serial',
+      label: '#',
+      render: (_r, i) => (
+        <span className="text-text-secondary">{serialBase + i}</span>
+      ),
+    },
     { key: 'name', label: 'Name' },
     {
       key: 'sku',

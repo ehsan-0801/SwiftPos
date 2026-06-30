@@ -34,7 +34,7 @@ export default function DataTable({ columns, rows, emptyText = 'No records found
               >
                 {columns.map((col) => (
                   <td key={col.key} className="px-4 py-3">
-                    {col.render ? col.render(row) : row[col.key]}
+                    {col.render ? col.render(row, i) : row[col.key]}
                   </td>
                 ))}
               </tr>
