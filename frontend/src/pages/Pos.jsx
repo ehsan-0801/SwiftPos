@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useQuery, useQueryClient, keepPreviousData } from '@tanstack/react-query'
 import toast from 'react-hot-toast'
 import { useCartStore } from '@/stores/cartStore'
 import { productsApi } from '@/services/products'
@@ -25,6 +25,7 @@ export default function Pos() {
 
   const [query, setQuery] = useState('')
   const [debounced, setDebounced] = useState('')
+  const [page, setPage] = useState(1)
   const [payOpen, setPayOpen] = useState(false)
   const [custOpen, setCustOpen] = useState(false)
   const [submitting, setSubmitting] = useState(false)
@@ -37,10 +38,15 @@ export default function Pos() {
     return () => clearTimeout(t)
   }, [query])
 
-  const { data: products = [], isFetching } = useQuery({
-    queryKey: ['pos-search', debounced],
-    queryFn: () => productsApi.search(debounced),
+  // Browse all active products, paginated; the search box filters the list.
+  const { data, isFetching } = useQuery({
+    queryKey: ['pos-products', debounced, page],
+    queryFn: () =>
+      productsApi.list({ q: debounced, page, per_page: 12, is_active: true }),
+    placeholderData: keepPreviousData,
   })
+  const products = data?.data ?? []
+  const productMeta = data?.meta
 
   const totalDue = total()
 
@@ -64,7 +70,7 @@ export default function Pos() {
       setRecent((r) => [sale, ...r].slice(0, 3))
       clear()
       setPayOpen(false)
-      queryClient.invalidateQueries({ queryKey: ['pos-search'] })
+      queryClient.invalidateQueries({ queryKey: ['pos-products'] })
       queryClient.invalidateQueries({ queryKey: ['products'] })
       toast.success(`Sale ${sale.invoice_no} completed`)
     } catch {
@@ -149,33 +155,62 @@ export default function Pos() {
             ref={searchRef}
             autoFocus
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            onChange={(e) => {
+              setQuery(e.target.value)
+              setPage(1)
+            }}
             placeholder="Search product / scan barcode  (F1)"
             className="mb-4 h-10 w-full rounded-md border border-border px-3 text-sm outline-none focus:border-primary"
           />
-          <div className="grid grid-cols-3 gap-3 overflow-auto xl:grid-cols-4">
-            {products.length === 0 && !isFetching && (
-              <div className="col-span-full mt-8 text-center text-sm text-text-secondary">
-                No products found
-              </div>
-            )}
-            {products.map((p) => (
-              <button
-                key={p.id}
-                onClick={() => addItem(p)}
-                disabled={p.stock <= 0}
-                className="flex min-h-[110px] flex-col justify-between rounded-md border border-border bg-white p-3 text-left transition hover:border-t-2 hover:border-t-primary hover:shadow-[var(--shadow-md)] disabled:opacity-40"
-              >
-                <span className="text-sm font-medium">{p.name}</span>
-                <div>
-                  <div className="font-bold">{formatCurrency(p.price)}</div>
-                  <div className="text-xs text-text-secondary">
-                    {p.stock > 0 ? `${p.stock} in stock` : 'Out of stock'}
-                  </div>
+          <div className="flex-1 overflow-auto">
+            <div className="grid grid-cols-3 gap-3 xl:grid-cols-4">
+              {products.length === 0 && !isFetching && (
+                <div className="col-span-full mt-8 text-center text-sm text-text-secondary">
+                  No products found
                 </div>
-              </button>
-            ))}
+              )}
+              {products.map((p) => (
+                <button
+                  key={p.id}
+                  onClick={() => addItem(p)}
+                  disabled={p.stock <= 0}
+                  className="flex min-h-[110px] flex-col justify-between rounded-md border border-border bg-white p-3 text-left transition hover:border-t-2 hover:border-t-primary hover:shadow-[var(--shadow-md)] disabled:opacity-40"
+                >
+                  <span className="text-sm font-medium">{p.name}</span>
+                  <div>
+                    <div className="font-bold">{formatCurrency(p.price)}</div>
+                    <div className="text-xs text-text-secondary">
+                      {p.stock > 0 ? `${p.stock} in stock` : 'Out of stock'}
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
           </div>
+
+          {productMeta && productMeta.last_page > 1 && (
+            <div className="mt-3 flex items-center justify-between text-sm text-text-secondary">
+              <span>
+                Showing {productMeta.from}–{productMeta.to} of {productMeta.total}
+              </span>
+              <div className="flex gap-2">
+                <Button
+                  variant="secondary"
+                  disabled={page <= 1}
+                  onClick={() => setPage((p) => p - 1)}
+                >
+                  ← Prev
+                </Button>
+                <Button
+                  variant="secondary"
+                  disabled={page >= productMeta.last_page}
+                  onClick={() => setPage((p) => p + 1)}
+                >
+                  Next →
+                </Button>
+              </div>
+            </div>
+          )}
         </section>
 
         {/* Cart panel */}
