@@ -14,5 +14,6 @@ export const navItems = [
   { to: '/expenses', label: 'Expenses', permission: 'manage-expenses' },
   { to: '/reports', label: 'Reports', permission: 'view-reports' },
   { to: '/users', label: 'Users', permission: 'manage-users' },
+  { to: '/audit-logs', label: 'Audit Log', permission: 'manage-users' },
   { to: '/settings', label: 'Settings', permission: 'system-settings' },
 ]

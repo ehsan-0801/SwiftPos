@@ -26,14 +26,24 @@ class AuditLogController extends Controller
             $query->whereDate('created_at', '<=', $request->query('to'));
         }
 
-        return $query->paginate($request->integer('per_page', 30))
-            ->through(fn (AuditLog $log) => [
+        $logs = $query->paginate($request->integer('per_page', 30));
+
+        return response()->json([
+            'data' => $logs->through(fn (AuditLog $log) => [
                 'id' => $log->id,
                 'action' => $log->action,
                 'description' => $log->description,
                 'user' => $log->user?->name,
                 'meta' => $log->meta,
                 'created_at' => $log->created_at?->toIso8601String(),
-            ]);
+            ])->items(),
+            'meta' => [
+                'total' => $logs->total(),
+                'from' => $logs->firstItem(),
+                'to' => $logs->lastItem(),
+                'current_page' => $logs->currentPage(),
+                'last_page' => $logs->lastPage(),
+            ],
+        ]);
     }
 }

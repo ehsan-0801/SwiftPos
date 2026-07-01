@@ -8,6 +8,10 @@ export const usersApi = {
   roles: () => api.get('/users/roles').then((r) => r.data),
 }
 
+export const auditApi = {
+  list: (params) => api.get('/audit-logs', { params }).then((r) => r.data),
+}
+
 export const settingsApi = {
   get: () => api.get('/settings').then((r) => r.data),
   update: (settings) => api.post('/settings', { settings }).then((r) => r.data),
