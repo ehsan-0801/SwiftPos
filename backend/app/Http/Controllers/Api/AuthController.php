@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
 use App\Http\Resources\UserResource;
+use App\Models\AuditLog;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -31,6 +32,8 @@ class AuthController extends Controller
 
         $token = $user->createToken('auth')->plainTextToken;
 
+        AuditLog::record('auth.login', $user, "{$user->name} logged in", [], $user->id);
+
         return response()->json([
             'token' => $token,
             'user' => new UserResource($user),
@@ -40,6 +43,8 @@ class AuthController extends Controller
     /** Revoke the current access token. */
     public function logout(Request $request)
     {
+        AuditLog::record('auth.logout', $request->user(), "{$request->user()->name} logged out");
+
         $request->user()->currentAccessToken()->delete();
 
         return response()->json(['message' => 'Logged out.']);

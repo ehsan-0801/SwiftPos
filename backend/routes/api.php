@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\AuditLogController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BrandController;
 use App\Http\Controllers\Api\CatalogController;
@@ -150,6 +151,10 @@ Route::prefix('v1')->group(function () {
             Route::post('/settings', [SettingController::class, 'update']);
             Route::post('/settings/logo', [SettingController::class, 'logo']);
         });
+
+        // --- Audit trail (admins) ---
+        Route::get('/audit-logs', [AuditLogController::class, 'index'])
+            ->middleware('permission:manage-users');
 
         // --- User management ---
         Route::middleware('permission:manage-users')->group(function () {

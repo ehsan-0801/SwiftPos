@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\AuditLog;
 use App\Models\Product;
 use App\Models\Purchase;
 use Illuminate\Support\Facades\DB;
@@ -60,6 +61,12 @@ class PurchaseService
             if ($purchase->supplier_id && $total > $paid) {
                 $purchase->supplier()->increment('balance', $total - $paid);
             }
+
+            AuditLog::record('purchase.created', $purchase,
+                "Purchase {$purchase->reference_no} for {$total}",
+                ['total' => $total, 'paid' => $paid, 'payment_status' => $paymentStatus],
+                $userId
+            );
 
             return $purchase->load(['items.product', 'supplier', 'user']);
         });

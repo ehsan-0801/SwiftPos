@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\AuditLog;
 use App\Models\Product;
 use App\Models\StockAdjustment;
 use Illuminate\Http\Request;
@@ -56,6 +57,12 @@ class StockAdjustmentController extends Controller
                 ...$data,
                 'user_id' => $request->user()->id,
             ]);
+
+            AuditLog::record('stock.adjusted', $product,
+                "Stock {$data['type']} {$data['qty']} — {$product->name}",
+                ['type' => $data['type'], 'qty' => $data['qty'], 'reason' => $data['reason'] ?? null],
+                $request->user()->id
+            );
 
             return response()->json([
                 'message' => 'Stock adjusted.',

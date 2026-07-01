@@ -2,8 +2,11 @@
 
 namespace App\Services;
 
+use App\Models\AuditLog;
+use App\Models\Customer;
 use App\Models\Product;
 use App\Models\Sale;
+use App\Models\Setting;
 use Illuminate\Support\Facades\DB;
 
 class SaleService
@@ -79,11 +82,21 @@ class SaleService
                 $products[$line['product_id']]->decrement('stock', $line['qty']);
             }
 
+            // Credit (unpaid) amount is added to the customer's due balance,
+            // and loyalty points accrue — both reversed on refund.
+            $this->applyCustomerEffects($sale, +1);
+
+            AuditLog::record('sale.created', $sale, "Sale {$sale->invoice_no} for {$sale->total}", [
+                'total' => $sale->total,
+                'paid' => $sale->paid,
+                'payment_status' => $sale->payment_status,
+            ], $userId);
+
             return $sale->load(['items.product', 'customer', 'user']);
         });
     }
 
-    /** Reverse a sale: restore stock and mark it returned. */
+    /** Reverse a sale: restore stock, undo customer effects, mark returned. */
     public function refund(Sale $sale): Sale
     {
         return DB::transaction(function () use ($sale) {
@@ -95,10 +108,46 @@ class SaleService
                 $item->product?->increment('stock', $item->qty);
             }
 
+            $this->applyCustomerEffects($sale, -1);
+
             $sale->update(['sale_status' => 'returned']);
+
+            AuditLog::record('sale.returned', $sale, "Returned sale {$sale->invoice_no}", [
+                'total' => $sale->total,
+            ]);
 
             return $sale->load(['items.product', 'customer', 'user']);
         });
+    }
+
+    /**
+     * Apply (or reverse, with $sign = -1) a sale's effect on the customer:
+     * the unpaid balance becomes due, and loyalty points accrue per the
+     * configured ratio (points earned per 1 currency unit of the total).
+     */
+    protected function applyCustomerEffects(Sale $sale, int $sign): void
+    {
+        if (! $sale->customer_id) {
+            return;
+        }
+
+        $customer = Customer::lockForUpdate()->find($sale->customer_id);
+        if (! $customer) {
+            return;
+        }
+
+        $due = max(0, round($sale->total - $sale->paid, 2));
+        if ($due > 0) {
+            $customer->balance = max(0, $customer->balance + $sign * $due);
+        }
+
+        $ratio = (float) Setting::get('loyalty_point_ratio', 0);
+        if ($ratio > 0) {
+            $points = (int) floor($sale->total * $ratio);
+            $customer->points = max(0, $customer->points + $sign * $points);
+        }
+
+        $customer->save();
     }
 
     /** Sequential, human-readable invoice number scoped to the day. */
